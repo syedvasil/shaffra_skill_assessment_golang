@@ -36,71 +36,36 @@ func Test_CreateUser(t *testing.T) {
 	mockCollection.AssertExpectations(t)
 }
 
-//func Test_GetUsers(t *testing.T) {
-//	t.Parallel()
-//	mockCollection := new(mocks.Collection)
-//	repo := &user.Repository{Db: mockCollection}
-//
-//	filter := bson.M{}
-//	mockCursor := new(mocks.Cursor)
-//
-//	mockCursor.On("Next", mock.Anything).Return(true).Once()
-//	mockCursor.On("Decode", mock.AnythingOfType("*repoModels.User")).Run(func(args mock.Arguments) {
-//		userMock := args.Get(0).(*repoModels.User)
-//		*userMock = repoModels.User{
-//			ID:       primitive.NewObjectID(),
-//			Username: "Test User",
-//			Email:    "test@example.com",
-//		}
-//	}).Return(nil)
-//	mockCursor.On("Next", mock.Anything).Return(false).Once()
-//
-//	mockCollection.On("Find", mock.Anything, filter, mock.Anything).Return(mockCursor, nil)
-//
-//	users, err := repo.GetUsers(filter, 0, 10)
-//	assert.NoError(t, err)
-//	assert.Len(t, users, 1)
-//	assert.Equal(t, "Test User", users[0].Username)
-//
-//	mockCollection.AssertExpectations(t)
-//	mockCursor.AssertExpectations(t)
-//}
-//
-//func Test_GetUserByID(t *testing.T) {
-//	t.Parallel()
-//
-//	mockCollection := new(mocks.Collection)
-//	mockSingleResult := new(mocks.SingleResult)
-//
-//	repo := &user.Repository{Db: mockCollection}
-//
-//	userID := primitive.NewObjectID()
-//	expectedUser := repoModels.User{
-//		ID:       userID,
-//		Username: "Test User",
-//		Email:    "test@example.com",
-//		Age:      12,
-//	}
-//
-//	mockCollection.On("FindOne", mock.Anything, bson.M{"_id": userID}).Return(mockSingleResult)
-//
-//	mockSingleResult.On("Decode", mock.AnythingOfType("*repoModels.User")).Run(func(args mock.Arguments) {
-//		arg := args.Get(0).(*repoModels.User)
-//		*arg = expectedUser
-//	}).Return(nil)
-//
-//	mockSingleResult.On("Decode", mock.AnythingOfType("*repoModels.User")).Run(func(args mock.Arguments) {
-//		arg := args.Get(0).(*repoModels.User)
-//		*arg = expectedUser
-//	}).Return(nil)
-//
-//	result, err := repo.GetUserByID(userID)
-//
-//	assert.NoError(t, err)
-//	assert.Equal(t, expectedUser, result)
-//	mockCollection.AssertExpectations(t)
-//	mockSingleResult.AssertExpectations(t)
-//}
+func Test_GetUserByID(t *testing.T) {
+	t.Parallel()
+
+	mockCollection := new(mocks.Collection)
+	mockSingleResult := new(mocks.SingleResult)
+
+	repo := &user.Repository{Db: mockCollection}
+
+	userID := primitive.NewObjectID()
+	expectedUser := repoModels.User{
+		ID:       userID,
+		Username: "Test User",
+		Email:    "test@example.com",
+		Age:      12,
+	}
+
+	mockCollection.On("FindOne", mock.Anything, bson.M{"_id": userID}).Return(mockSingleResult)
+
+	mockSingleResult.On("Decode", mock.AnythingOfType("*models.User")).Run(func(args mock.Arguments) {
+		arg := args.Get(0).(*repoModels.User)
+		*arg = expectedUser
+	}).Return(nil)
+
+	result, err := repo.GetUserByID(userID)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expectedUser, result)
+	mockCollection.AssertExpectations(t)
+	mockSingleResult.AssertExpectations(t)
+}
 
 func Test_UpdateUser(t *testing.T) {
 	t.Parallel()
